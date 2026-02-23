@@ -1,6 +1,6 @@
 import os
 import requests
-from openai import OpenAI
+import google.generativeai as genai
 from jinja2 import Environment, FileSystemLoader
 from datetime import datetime
 import csv
@@ -8,12 +8,12 @@ import random
 
 # --- 1. CONFIGURATION & API KEYS ---
 # Ensure you set these environment variables before running, e.g.
-# export OPENAI_API_KEY="your_key"
+# export GEMINI_API_KEY="your_key"
 # export UNSPLASH_ACCESS_KEY="your_key"
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "your_openai_api_key_here")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "your_gemini_api_key_here")
 UNSPLASH_ACCESS_KEY = os.environ.get("UNSPLASH_ACCESS_KEY", "your_unsplash_access_key_here")
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+genai.configure(api_key=GEMINI_API_KEY)
 
 # --- 2. AI CONTENT GENERATION ---
 def generate_article(keyword):
@@ -26,12 +26,9 @@ def generate_article(keyword):
     At the very bottom, include a strong medical disclaimer stating this is for informational purposes only and not medical advice.
     """
     
-    response = client.chat.completions.create(
-        model="gpt-4o", # Or use your preferred AI model
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7
-    )
-    return response.choices[0].message.content
+    model = genai.GenerativeModel('gemini-2.5-flash')
+    response = model.generate_content(prompt)
+    return response.text
 
 # --- 3. UNSPLASH IMAGE FETCHING ---
 def get_featured_image(keyword):
