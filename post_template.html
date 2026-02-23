@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Fitness Blog</title>
+    <style>
+        :root {
+            --primary: #FF5A5F;
+            --background: #fafafa;
+            --text-main: #222222;
+            --text-muted: #717171;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header {
+            background-color: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header a {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .article-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            line-height: 1.2;
+            margin-bottom: 10px;
+            color: #111;
+        }
+
+        .meta {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        .featured-image-container {
+            width: 100%;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .featured-image {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            object-fit: cover;
+            max-height: 450px;
+        }
+
+        .image-credit {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .image-credit a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .article-content {
+            font-size: 1.15rem;
+        }
+
+        .article-content h2 {
+            font-size: 1.8rem;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .article-content h3 {
+            font-size: 1.4rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .article-content p {
+            margin-bottom: 25px;
+        }
+
+        .disclaimer {
+            margin-top: 60px;
+            padding: 20px;
+            background-color: #f1f5f9;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #ffffff;
+            color: var(--text-muted);
+            border-top: 1px solid #eaeaea;
+            margin-top: 60px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html">FitAuto</a>
+    </header>
+
+    <main class="article-container">
+        <h1>{{ title }}</h1>
+        <div class="meta">
+            Published on {{ date }}
+        </div>
+
+        <div class="featured-image-container">
+            <img src="{{ image_url }}" alt="{{ image_alt }}" class="featured-image">
+            <div class="image-credit">
+                Photo by <a href="{{ credit_link }}?utm_source=fitauto&utm_medium=referral">{{ credit_name }}</a> on <a href="https://unsplash.com/?utm_source=fitauto&utm_medium=referral">Unsplash</a>
+            </div>
+        </div>
+
+        <article class="article-content">
+            {{ article_body | safe }}
+        </article>
+    </main>
+
+    <footer>
+        &copy; 2026 FitAuto. All rights reserved.
+    </footer>
+
+</body>
+</html>

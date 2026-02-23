@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAuto - Health & Fitness</title>
+    <style>
+        :root {
+            --primary: #FF5A5F;
+            --background: #fafafa;
+            --text-main: #222222;
+            --text-muted: #717171;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #ffffff;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        header a {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(to bottom, #ffffff, var(--background));
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin: 0 0 15px 0;
+            color: #111;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .grid-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-muted);
+            background: #fff;
+            border-radius: 12px;
+            border: 2px dashed #eee;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #ffffff;
+            color: var(--text-muted);
+            border-top: 1px solid #eaeaea;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="index.html">FitAuto</a>
+    </header>
+
+    <div class="hero">
+        <h1>Daily Fitness Insights</h1>
+        <p>AI-generated, fully automated health and fitness articles. Updated daily.</p>
+    </div>
+
+    <main class="grid-container">
+        <div class="empty-state">
+            <h2>No articles yet!</h2>
+            <p>Run the generate.py script to create the first automated post.</p>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 FitAuto. All rights reserved. Built with Automation.
+    </footer>
+
+</body>
+
+</html>

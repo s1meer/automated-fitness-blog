@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAuto - Health & Fitness</title>
+    <style>
+        :root {
+            --primary: #FF5A5F;
+            --background: #fafafa;
+            --text-main: #222222;
+            --text-muted: #717171;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #ffffff;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        header a {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(to bottom, #ffffff, var(--background));
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin: 0 0 15px 0;
+            color: #111;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .grid-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin: 0 0 15px 0;
+        }
+
+        .card-meta {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #ffffff;
+            color: var(--text-muted);
+            border-top: 1px solid #eaeaea;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="index.html">FitAuto</a>
+    </header>
+
+    <div class="hero">
+        <h1>Daily Fitness Insights</h1>
+        <p>AI-generated, fully automated health and fitness articles. Updated daily.</p>
+    </div>
+
+    <main class="grid-container">
+        <!-- Jinja2 loop for dynamic posts -->
+        {% for post in posts %}
+        <a href="{{ post.url }}" class="card">
+            <img src="{{ post.image_url }}" alt="{{ post.image_alt }}" class="card-image">
+            <div class="card-content">
+                <h2 class="card-title">{{ post.title }}</h2>
+                <div class="card-meta">{{ post.date }}</div>
+            </div>
+        </a>
+        {% endfor %}
+    </main>
+
+    <footer>
+        &copy; 2026 FitAuto. All rights reserved. Built with Automation.
+    </footer>
+
+</body>
+
+</html>
