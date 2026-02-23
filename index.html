@@ -65,14 +65,49 @@
             gap: 30px;
         }
 
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 80px 20px;
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin: 0 0 15px 0;
+        }
+
+        .card-meta {
+            font-size: 0.9rem;
             color: var(--text-muted);
-            background: #fff;
-            border-radius: 12px;
-            border: 2px dashed #eee;
+            font-weight: 500;
         }
 
         footer {
@@ -98,10 +133,16 @@
     </div>
 
     <main class="grid-container">
-        <div class="empty-state">
-            <h2>No articles yet!</h2>
-            <p>Run the generate.py script to create the first automated post.</p>
-        </div>
+        <!-- Jinja2 loop for dynamic posts -->
+        
+        <a href="beginner-kettlebell-exercises.html" class="card">
+            <img src="https://images.unsplash.com/photo-1668629115068-6a67fa7b7f08?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NzI0OTh8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzE4MzE3ODh8&ixlib=rb-4.1.0&q=80&w=1080" alt="a large metal object on a tree branch" class="card-image">
+            <div class="card-content">
+                <h2 class="card-title">Beginner Kettlebell Exercises</h2>
+                <div class="card-meta">February 23, 2026</div>
+            </div>
+        </a>
+        
     </main>
 
     <footer>

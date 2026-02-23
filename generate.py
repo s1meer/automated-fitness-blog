@@ -1,39 +1,41 @@
 import os
 import requests
-import google.generativeai as genai
+import json
+from google import genai
 from jinja2 import Environment, FileSystemLoader
-from datetime import datetime
+from datetime import datetime, timedelta
 import csv
-import random
+import subprocess
 
 # --- 1. CONFIGURATION & API KEYS ---
-# Ensure you set these environment variables before running, e.g.
-# export GEMINI_API_KEY="your_key"
-# export UNSPLASH_ACCESS_KEY="your_key"
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "your_gemini_api_key_here")
-UNSPLASH_ACCESS_KEY = os.environ.get("UNSPLASH_ACCESS_KEY", "your_unsplash_access_key_here")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyCnJhKSKLg17LIEwFu0NAYV7-t_eHCgGF4")
+UNSPLASH_ACCESS_KEY = os.environ.get("UNSPLASH_ACCESS_KEY", "yiF1s2-7cS9xvKBVJ2-2Yo4FtOFe_xO5px9hpfSGV_Q")
 
-genai.configure(api_key=GEMINI_API_KEY)
+# Initialize the Gemini client (Using the NEW google-genai library)
+client = genai.Client(api_key=GEMINI_API_KEY)
 
-# --- 2. AI CONTENT GENERATION ---
+# --- 2. AI CONTENT GENERATION (GEMINI) ---
 def generate_article(keyword):
-    print(f"Generating article for: {keyword}...")
+    print(f"Generating article with Gemini for: {keyword}...")
     
     prompt = f"""
-    Act as a certified personal trainer. Write an engaging, 800-word HTML-formatted blog post about '{keyword}'. 
+    Act as a certified fitness expert and SEO specialist. Write an engaging, 1000-word SEO-optimized HTML-formatted blog post about '{keyword}'. 
     Use <h2> and <h3> tags for structure, and <p> for paragraphs. 
-    Do not include the <h1> tag (I will add that separately).
+    Include internal link placeholders like [LINK_TO_OTHER_POST] where appropriate.
+    Do not include the <h1> tag.
     At the very bottom, include a strong medical disclaimer stating this is for informational purposes only and not medical advice.
     """
     
-    model = genai.GenerativeModel('gemini-2.5-flash')
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model="gemini-2.5-flash", 
+        contents=prompt
+    )
     return response.text
 
 # --- 3. UNSPLASH IMAGE FETCHING ---
 def get_featured_image(keyword):
     print(f"Fetching image for: {keyword}...")
-    url = f"https://api.unsplash.com/photos/random"
+    url = "https://api.unsplash.com/photos/random"
     params = {
         "query": keyword,
         "orientation": "landscape",
@@ -49,21 +51,28 @@ def get_featured_image(keyword):
             "credit_name": data['user']['name'],
             "credit_link": data['user']['links']['html']
         }
-    return None # Fallback if API fails
+    return None 
 
-# --- 4. ASSEMBLE HTML WITH JINJA2 ---
-def build_html_page(keyword, article_html, image_data):
-    print("Assembling HTML...")
+# --- 4. DATA PERSISTENCE (POSTS LOG) ---
+def load_posts_log():
+    if os.path.exists("posts.json"):
+        with open("posts.json", "r") as f:
+            return json.load(f)
+    return []
+
+def save_posts_log(posts):
+    with open("posts.json", "w") as f:
+        json.dump(posts, f, indent=4)
+
+# --- 5. ASSEMBLE HTML ---
+def build_html_page(keyword, article_html, image_data, date_str):
+    print(f"Assembling HTML for {keyword}...")
     
-    # Set up Jinja2 to look for templates in the current directory
     env = Environment(loader=FileSystemLoader('.'))
     template = env.get_template('post_template.html')
     
-    # Generate the safe URL slug (e.g., "kettlebell-workouts")
-    slug = keyword.lower().replace(" ", "-")
-    date_str = datetime.now().strftime("%B %d, %Y")
+    slug = keyword.lower().replace(" ", "-").replace("'", "").replace('"', "")
     
-    # Render the template with our dynamic variables
     final_html = template.render(
         title=keyword.title(),
         date=date_str,
@@ -74,52 +83,79 @@ def build_html_page(keyword, article_html, image_data):
         article_body=article_html
     )
     
-    # Save the new file
     filename = f"{slug}.html"
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(final_html)
-        
-    print(f"✅ Success! Saved as {filename}")
-    return filename, slug, date_str
-
-# --- 5. UPDATE INDEX ---
-def update_index(title, url_slug, date_str, image_url, image_alt):
-    print("Updating index.html...")
     
+    return filename, slug
+
+def update_index(posts):
+    print("Updating index.html...")
     env = Environment(loader=FileSystemLoader('.'))
     template = env.get_template('index_template.html')
     
-    # In a real app, you'd parse existing posts or load from a JSON/CSV database
-    # For simplicity, we just rebuild the index with this 1 new post 
-    # To fully automate, you should maintain a 'posts.json' list.
+    # Sort posts by date descending (rough sort)
+    sorted_posts = sorted(posts, key=lambda x: x['date'], reverse=True)
     
-    posts = [
-        {
-            "title": title,
-            "url": f"{url_slug}.html",
-            "date": date_str,
-            "image_url": image_url,
-            "image_alt": image_alt
-        }
-    ]
-    
-    final_html = template.render(posts=posts)
+    final_html = template.render(posts=sorted_posts)
     with open("index.html", 'w', encoding='utf-8') as f:
         f.write(final_html)
-    print("✅ Index updated!")
 
-# --- 6. MAIN EXECUTION ---
+# --- 6. GIT AUTOMATION ---
+def git_push():
+    print("Pushing updates to GitHub...")
+    try:
+        subprocess.run(["git", "add", "."], check=True)
+        subprocess.run(["git", "commit", "-m", f"Auto-post: {datetime.now().strftime('%Y-%m-%d')}"], check=True)
+        subprocess.run(["git", "push"], check=True)
+        print("🚀 Successfully pushed to GitHub!")
+    except Exception as e:
+        print(f"Git push failed: {e}")
+
+# --- 7. BATCH PROCESSOR ---
+def run_batch(num_posts=1):
+    posts = load_posts_log()
+    used_keywords = [p['keyword'] for p in posts]
+    
+    available_keywords = []
+    with open('keywords.csv', mode='r') as file:
+        reader = csv.DictReader(file)
+        available_keywords = [row['keyword'] for row in reader if row['keyword'] not in used_keywords]
+
+    if not available_keywords:
+        print("No new keywords found in keywords.csv!")
+        return
+
+    count = 0
+    for keyword in available_keywords:
+        if count >= num_posts:
+            break
+            
+        article_content = generate_article(keyword)
+        image_info = get_featured_image(keyword)
+        
+        if image_info:
+            date_str = datetime.now().strftime("%B %d, %Y")
+            filename, slug = build_html_page(keyword, article_content, image_info, date_str)
+            
+            posts.append({
+                "keyword": keyword,
+                "title": keyword.title(),
+                "url": filename,
+                "date": date_str,
+                "image_url": image_info['url'],
+                "image_alt": image_info['alt_text']
+            })
+            count += 1
+        else:
+            print(f"Skipping {keyword} due to image fetch failure.")
+
+    save_posts_log(posts)
+    update_index(posts)
+    
+    if count > 0:
+        git_push()
+
 if __name__ == "__main__":
-    # In the future, this will pull from a CSV. For now, we hardcode a test keyword.
-    target_keyword = "beginner kettlebell exercises"
-    image_keyword = "kettlebell"
-    
-    # Run the pipeline
-    article_content = generate_article(target_keyword)
-    image_info = get_featured_image(image_keyword)
-    
-    if image_info:
-        filename, slug, date_str = build_html_page(target_keyword, article_content, image_info)
-        update_index(target_keyword.title(), slug, date_str, image_info['url'], image_info['alt_text'])
-    else:
-        print("Failed to fetch image. Aborting to prevent incomplete page.")
+    # Change num_posts to generate more at once
+    run_batch(num_posts=1)
